@@ -15,15 +15,17 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           registry-url: https://registry.npmjs.org
+      - name: Use npm with OIDC support
+        run: npm install --global npm@11.12.1
       - name: Test
         run: node --test test/*.test.mjs
       - name: Bundle shape
         run: node scripts/check-publish-ready.mjs --strict
       - name: Market index is current
         run: node scripts/make-market-index.mjs --check
+      - name: Verify release tag
+        run: node -e "if (process.env.GITHUB_REF_NAME !== 'v' + require('./package.json').version) process.exit(1)"
       - name: Publish
         run: npm publish --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -237,22 +237,15 @@ node scripts/make-market-index.mjs \
 
 ---
 
-## 5. 自动发布（GitHub Actions）
+## 5. 自动发布（GitHub Actions / Trusted Publishing）
 
-仓库内提供 `.github/workflows/publish.yml`：推 `v*` tag 时跑测试、校验版本与索引、`npm publish --provenance`。
+工作流 `.github/workflows/publish.yml` 使用 Node 24、npm 11.12.1 和 OIDC，不需要 `NPM_TOKEN`。先完成真实首发，然后在 npm 包 Settings → Trusted Publisher 配置 GitHub Actions：owner `CYRYGBG`、repository `dsh-isolated-monitor`、workflow `publish.yml`，允许 `npm publish`；Environment 留空。由账户本人保存并完成安全密钥确认。
 
-启用步骤：
+本地首次发布执行 `npm publish --access public` 后，如提示浏览器认证，回车打开页面并由本人确认 Security Key。不要使用六位 `--otp` 代替安全密钥。
 
-1. 在 npm 创建 **Automation / Granular token**（需要 `publish` 权限）；
-2. GitHub 仓库 → Settings → Secrets → 新建 `NPM_TOKEN`；
-3. 推 tag：
+注意：CLI 返回 `+ package@version` 仍需验证 registry。若公开的是 `0.0.0-stage` / Temporary Holding Version，正式版本尚未可用；核对账户 Staged Packages，存在条目时审批，不存在时等待 npm 处理。不能把占位版本当作成功发布或拿它进行安装验收。
 
-```bash
-npm version patch
-git push --follow-tags
-```
-
-工作流会用 `NODE_AUTH_TOKEN` 发布，并生成 npm provenance（可验证构建来源）。若不想用 provenance，删掉 `--provenance` 即可。
+后续更新版本和 CHANGELOG，测试与严格检查通过后，经授权推送对应 `v*` tag。工作流校验 tag 与 package.version 一致，再发布并生成 provenance。已在本地提交发布的版本不要重复触发 CI 发布；待正式版本公开后，以真实 npm 时间戳重建索引并提交。
 
 ---
 
@@ -292,4 +285,4 @@ git push --follow-tags
 不需要。索引完全由用户自行添加；官方无内置索引。唯一会改的是用户自己的 profile bundle 列表（安装时自动写入）。
 
 **Q：撤销发布？**
-npm 允许 72 小时内 `npm unpublish dsh-isolated-monitor@x.y.z`；更推荐 `npm deprecate dsh-isolated-monitor@x.y.z "reason"` 并发布修复版本。索引里删除对应版本并重新生成。
+npm unpublish 受当前官方政策、时间与依赖条件限制，不能保证 72 小时内无条件撤销；更推荐 `npm deprecate dsh-isolated-monitor@x.y.z "reason"` 并发布修复版本。索引里删除对应版本并重新生成。

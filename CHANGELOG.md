@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- 后续发布使用 GitHub Actions OIDC，移除 NPM_TOKEN 依赖，并检查 tag 与版本一致。
+- 发布文档补充浏览器 Security Key 验证、占位版本状态核对与撤销边界。
+
 ## 0.1.0 — 2026-11-13
 
 首个可用版本。
