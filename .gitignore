@@ -1,0 +1,22 @@
+node_modules/
+*.tgz
+*.log
+.DS_Store
+Thumbs.db
+.plugin-manager/
+.idea/
+.vscode/
+
+# Plugin runtime data (lives in $DSH_HOME/isolated-monitor/, never commit it)
+state.json
+state.json.bak
+state.json.corrupt-*
+state.run
+mount.json
+runs/
+
+# Local environment / credentials
+.env
+.env.*
+!.env.example
+

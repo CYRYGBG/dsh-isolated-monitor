@@ -1,0 +1,91 @@
+{
+  "format": 1,
+  "title": {
+    "en": "dsh-isolated-monitor",
+    "zh": "独立会话监控"
+  },
+  "description": {
+    "en": "Scheduled monitors that run in a fresh isolated Session: archive when normal, alert the creator conversation only on anomalies.",
+    "zh": "每次巡检新建独立会话：正常自动归档，只有异常才回传原始主对话。"
+  },
+  "metadata": {
+    "categories": {
+      "automation": {
+        "title": {
+          "en": "Automation",
+          "zh": "自动化"
+        }
+      },
+      "monitoring": {
+        "title": {
+          "en": "Monitoring",
+          "zh": "监控"
+        }
+      }
+    },
+    "labels": {
+      "host": {
+        "title": {
+          "en": "Host plugin",
+          "zh": "宿主插件"
+        }
+      },
+      "read-only": {
+        "title": {
+          "en": "Read-only by default",
+          "zh": "默认只读"
+        }
+      }
+    },
+    "sortKeys": {}
+  },
+  "plugins": [
+    {
+      "name": "dsh-isolated-monitor",
+      "title": {
+        "en": "Isolated Monitor",
+        "zh": "独立会话监控"
+      },
+      "description": {
+        "en": "Scheduled monitors in a fresh isolated Session per run: archive when normal, alert the creator conversation only on anomalies.",
+        "zh": "每次巡检新建独立会话：正常自动归档，只有异常才回传原始主对话。"
+      },
+      "author": "dsh-isolated-monitor contributors",
+      "homepage": "https://github.com/your-org/dsh-isolated-monitor",
+      "repository": {
+        "url": "https://github.com/your-org/dsh-isolated-monitor"
+      },
+      "icon": "./icon.svg",
+      "metadata": {
+        "category": "monitoring",
+        "keywords": [
+          "dsh-plugin",
+          "monitor",
+          "cron",
+          "schedule",
+          "isolated-session",
+          "alert",
+          "监控",
+          "定时任务"
+        ],
+        "labels": [
+          "host",
+          "read-only"
+        ],
+        "sortKeys": {}
+      },
+      "versions": [
+        {
+          "version": "0.1.0",
+          "publishTimestamp": 1794568739,
+          "source": {
+            "type": "npm"
+          },
+          "engines": {
+            "dsh": ">=0.2.2-rc.1 <0.3.0"
+          }
+        }
+      ]
+    }
+  ]
+}

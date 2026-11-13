@@ -1,0 +1,14 @@
+# dsh-isolated-monitor bundle patch: one host row over the Web / Desktop profile.
+# The row name resolves from the profile's node_modules, where
+# `pnpm add <path>` (or the plugin_manager tool) installed this package.
+#
+# Per-deployment defaults can be overridden from the profile's own
+# cordis.patch.yml (the profile patch layer wins):
+#
+# - id: isolated-monitor
+#   config:
+#     timeZone: Asia/Shanghai
+#     defaultTimeoutSeconds: 900
+- insert:
+    - id: isolated-monitor
+      name: dsh-isolated-monitor

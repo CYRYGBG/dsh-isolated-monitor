@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Isolated Monitor",
+    "description": "Scheduled monitors in a fresh isolated Session per run: archive when normal, alert the creator conversation only on anomalies."
+  }
+}
