@@ -26,7 +26,22 @@ export function createRunner(options) {
   const { ctx, config, store, sessions, alerts, checks, timing, logger, adapters } = options
   const inflight = new Set()
   const active = new Map()
+  const sleepers = new Set()
   let stopped = false
+
+  /** Backoff sleep that plugin unload can wake immediately. */
+  function wait(ms) {
+    return new Promise((resolve) => {
+      let timer
+      const wake = () => {
+        clearTimeout(timer)
+        sleepers.delete(wake)
+        resolve()
+      }
+      timer = setTimeout(wake, ms)
+      sleepers.add(wake)
+    })
+  }
 
   /**
    * Execute one task once.
@@ -291,7 +306,7 @@ export function createRunner(options) {
         if (stored !== undefined) stored.retry_scheduled = true
       })
       const delay = Math.min(5 * 60_000, Math.max(50, (task.retry_policy?.backoff_ms ?? 60_000) * attempt))
-      await sleep(delay)
+      await wait(delay)
       if (stopped) return { outcome: run.status, run_id: run.run_id, code: run.code, retry_aborted: true }
       const fresh = store.getState().tasks[task.task_id]
       if (fresh === undefined || fresh.status !== TASK_STATUS.ACTIVE) {
@@ -374,7 +389,8 @@ export function createRunner(options) {
         // Already idle.
       }
     }, Math.max(1000, task.timeout_ms))
-    timer.unref?.()
+    // Keep the run deadline referenced: a hung monitor must still time out and
+    // be classified even when the host has no other active handles.
 
     try {
       const message = adapters.createUserMessage({
@@ -421,7 +437,7 @@ export function createRunner(options) {
         // idle
       }
     }, timeout)
-    timer.unref?.()
+
     try {
       const message = adapters.createUserMessage({
         content: [
@@ -576,6 +592,7 @@ export function createRunner(options) {
   /** Cancel and dispose every run this plugin still owns (plugin unload). */
   async function shutdown() {
     stopped = true
+    for (const wake of [...sleepers]) wake()
     const sessionsToStop = [...active.values()]
     active.clear()
     for (const entry of sessionsToStop) {
@@ -607,14 +624,6 @@ const RETRYABLE_CODES = new Set([
   'prompt_flush_failed',
   'runner_exception',
 ])
-
-/** Sleep that does not keep the process alive and honours cancellation-free plugin unload. */
-function sleep(ms) {
-  return new Promise((resolve) => {
-    const timer = setTimeout(resolve, ms)
-    timer.unref?.()
-  })
-}
 
 function pickTask(task) {
   return {
