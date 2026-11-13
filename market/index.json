@@ -51,9 +51,9 @@
         "zh": "每次巡检新建独立会话：正常自动归档，只有异常才回传原始主对话。"
       },
       "author": "dsh-isolated-monitor contributors",
-      "homepage": "https://github.com/your-org/dsh-isolated-monitor",
+      "homepage": "https://github.com/CYRYGBG/dsh-isolated-monitor",
       "repository": {
-        "url": "https://github.com/your-org/dsh-isolated-monitor"
+        "url": "https://github.com/CYRYGBG/dsh-isolated-monitor"
       },
       "icon": "./icon.svg",
       "metadata": {
@@ -77,7 +77,7 @@
       "versions": [
         {
           "version": "0.1.0",
-          "publishTimestamp": 1794568739,
+          "publishTimestamp": 1794570378,
           "source": {
             "type": "npm"
           },
