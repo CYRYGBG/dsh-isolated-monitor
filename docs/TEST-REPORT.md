@@ -269,3 +269,28 @@ DSH 的 `readPluginMeta`（`@deepseek-ai/dsh-app-boot`）从包内 `locale/*.jso
 - 真实 DSH 环境中完成"正常 0 token 归档、异常保留并回传、归档集合正确、inbox 可验证"；
 - 所有失败分支均不会误判为正常；
 - 已知限制见 README「已知限制」。
+
+## 13. npm 0.1.0 发布验收（2026-11-13）
+
+- npm 正式版本：0.1.0，发布时间 2026-11-13T13:18:59.712Z（北京时间 21:18:59），索引 Unix 秒 1794547139。
+- registry tarball SHA-512 与 dist.integrity 一致，27 文件，无 test/market/scripts，engines.dsh 为 >=0.2.2-rc.1 <0.3.0。
+- Node 24.15.0 与 Node 22.23.5 均 37/37；strict 检查通过。索引通过安装内官方 parseMarketIndex，远端 HTTPS 直链返回 200。
+- 干净环境 A：临时 DSH_HOME `dsh-publish-validation-20261113`，实际在 UI 输入包名，选择 npm 官方源安装 0.1.0 并启用；mount.json 四工具、0 任务，UI 可见 /monitor 候选。
+- 干净环境 B：临时 DSH_HOME `dsh-publish-discover-20261113`，添加真实 raw 索引，isolated/monitor/监控均匹配；从发现页安装指定 0.1.0 并启用，mount.json 四工具、0 任务。
+- B 初次直连读取索引失败，使用本机现有 127.0.0.1:7897 代理，仅对临时进程设置 HTTP(S)_PROXY 与 NODE_USE_ENV_PROXY=1 后成功；未改变系统网络设置或 desktop profile。
+
+根据用户追加指示“直接在我本地 dsh 验收”，任务运行链路改在已登录的 desktop DSH 验证，没有复制凭据到临时环境。新建验收会话 `session-b6241842-7a93-4f2f-873e-07d1ff1bc566`。
+
+| 场景 | 任务 | 运行 | 结果 |
+|---|---|---|---|
+| README file_exists / hybrid | mon-5afc307f | run-mwf0r88n-c1sqdid3 | normal，session_archived=true，未调用模型 |
+| 模拟异常 / agent | mon-3f0c84d9 | run-mwf0r892-i2eq7k63 | alert，session_archived=false，回传 delivered |
+
+正常 Session：session-e9e5a3cd-8b09-4616-8e6d-0c13ef4b278b。异常 Session：session-5a76e9d2-6abe-4cb1-9ba2-6377f52c384f。
+投递 del-0753006fb2a2c1cc，delivered_at=2026-11-13T13:35:22.037Z；消息 84afb381-ab63-4f2a-9605-9887f92c2796，pending_alerts=0。本地 UI 可见模拟异常消息。
+
+验收指令误用了 info 严重级别，插件契约实际为 low/medium/high/critical，结果归一化为 low；这是验收输入偏差，未修改业务源码。告警明确标记“npm 发布验收模拟异常，无真实故障”。两个新增任务最终 paused，原有 mon-36f7128c、mon-b6f79548 仍 paused 且各保留原先一次运行。所有任务和历史均保留。
+
+npm 网页已显示 Successfully added new Trusted Publisher connection；绑定 CYRYGBG/dsh-isolated-monitor、publish.yml、允许 npm publish。工作流已移除 NPM_TOKEN、使用 Node 24/npm 11.12.1，并检查 tag 与包版本一致。0.1.0 由本地浏览器 Security Key 验证发布，本次未通过 OIDC 重复发布同版本。新连接须在 npm 要求的 2 天内完成首次成功发布；下一次发版前需核对连接是否过期，过期则由账户本人重新创建。当前不能将“保存绑定”声称为“O​​IDC 实际发布已验证”。
+
+首发中 npm 曾返回成功但仅公开 0.0.0-stage 占位版本；约 5 分钟后正式 0.1.0 才公开。当时账户 Staged Packages 为空，未再次提交、未人工审批、未删除占位版本。最终 latest=0.1.0。
